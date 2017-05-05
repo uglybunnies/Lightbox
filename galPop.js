@@ -1,86 +1,119 @@
-$(function(){
-//detect all the links that point to the full-size image
-    var galLinks = $('#gallery a.galPic');
-//iterate over the galLinks and perform these instructions for each
-    $(galLinks).each(function(i){
+(function(){
+// collect all the links that point to the full-size image
+    var galLinks = document.querySelectorAll('#gallery a.galPic');
+// iterate over the links and perform these instructions for each
+    [].forEach.call(galLinks, function(el, i) {
 //create a new image object for pre-caching
-        this.pics=new Image();
+        el.pics = new Image();
 //set the src for each image object
-        this.pics.src=this.href;
+        el.pics.src = el.getAttribute('href');
 //set the photo caption based on the thumb image alt attribute
-        this.capt=$(this).children('img').attr('alt');
+        el.capt = el.querySelector('img').getAttribute('alt');
 //set the larger image alt attribute to match that of the thumb
-        $(this.pics).attr('alt',this.capt);
+        el.pics.setAttribute('alt', el.capt);
 //set the next image link information
-        this.nLink = (i === galLinks.length-1 ? galLinks[0] : galLinks[i+1]);
+        el.nLink = (i === galLinks.length - 1 ? galLinks[0] : galLinks[i+1]);
 //set the previous image link information
-        this.pLink = (i === 0 ? galLinks[galLinks.length-1] : galLinks[i-1]);
+        el.pLink = (i === 0 ? galLinks[galLinks.length - 1] : galLinks[i - 1]);
 //set the click event handler to run popPicBox function and prevent the default behavior
-        $(this).click(function(e){
+        el.addEventListener('click', function(e) {
             e.preventDefault();
-            return popPicBox(this);
+            var showing = document.getElementById('galScreen');
+            if (!showing) {
+                return popPicBox(el);
+            }
         });
     });
-});
-var popPicBox = function(o){
+})();
+var popPicBox = function(o) {
 //create and append the various elements required to display the lightbox
-    var galScreen = $('<div id="galScreen" class="galb"></div>'); // transparent overlay screen
-    var galBox = $('<div id="galBox" class="galb"></div>');		  // main container for the image box
-    var galPics = $('<div id="pb" class="s4"></div>'); 			  // image box
-    var closeP = $('<p id="closeP"></p>');						  // close control paragraph
-    var closeLink =$('<a href="#">close</a>');					  // close control
-    $(closeP).append(closeLink);								  // append close control to the paragraph
-    var galPic = $('<img id="pPic" src="'+o.pics.src+'">');		  // larger image tag
-    var capP = $('<p id="capP">'+o.capt+'</p>');				  // caption paragraph
-    var navP = $('<p id="navP"></p>');							  // navigation control paragrah
-    var prevLink = $('<a href="'+o.pLink.href+'" title="view previous image">&#171; prev</a>'); //prev link
-    var nextLink= $('<a href="'+o.nLink.href+'" title="view next image">next &#187;</a>'); // next link
-    $(navP).append(prevLink).append(nextLink);					  // append the links
-    $(galPics).append(closeP).append(navP).append(galPic).append(capP); // append the p's and img
-    $(galBox).append(galPics);									  // append the image box to the container
-    $('body').append(galScreen);								  // append the screen
-    $('body').append(galBox);									  // append the image box
+    var div = document.createElement('div');
+    var p = document.createElement('p');
+    var a = document.createElement('a');
+    var galPic = o.pics;
+    var box = document.createDocumentFragment();
+    var screen = document.createDocumentFragment();
+    var galScreen = div.cloneNode(false);
+    galScreen.id = 'galScreen';
+    galScreen.classList.add('galb');
+    screen.appendChild(galScreen);
+    var galBox = div.cloneNode(false);		      // main container for the image box
+    galBox.id = 'galBox';
+    galBox.classList.add('galb');
+    var galPics = div.cloneNode(false); 		  // image box
+    galPics.id = 'pb';
+    galPics.classList.add('s4');
+    var closeP = p.cloneNode(false);			  // close control paragraph
+    closeP.id = 'closeP';
+    var closeLink = a.cloneNode(false);			  // close control
+    closeLink.setAttribute('href', '#');
+    closeLink.textContent = 'close';
+    closeP.appendChild(closeLink);			      // append close control to the paragraph
+    galPic.id = 'pPic';                           // larger image
+    galPic.src = o.pics.src;
+    galPic.classList.add('show');
+    var capP = p.cloneNode(false);				  // caption paragraph
+    capP.id = 'capP';
+    capP.textContent = o.capt;
+    var navP = p.cloneNode(false);				  // navigation control paragrah
+    navP.id = 'navP';
+    var prevLink = a.cloneNode(false);            //prev link
+    prevLink.href = o.pLink.href;
+    prevLink.setAttribute('title', 'view previous image');
+    prevLink.textContent = '\u00AB prev';
+    var nextLink = a.cloneNode(false);            // next link
+    nextLink.href = o.nLink.href;
+    nextLink.setAttribute('title', 'view next image');
+    nextLink.textContent = 'next \u00BB';
+    navP.append(prevLink, nextLink);             // append the links
+    galPics.append(closeP, navP, galPic, capP);  // append the p's and img
+    galBox.appendChild(galPics);				 // append the image box to the container
+    box.appendChild(galBox);
+    document.body.appendChild(screen);           // append the screen
+    document.body.appendChild(box);				 // append the image box
+    galBox.classList.add('show');
+    galScreen.classList.add('show');
 // add event handlers and instructions for the controls
-	$(galPics).click(function(e){
-		e.stopPropagation();									  // keep clicks from bubbling up
+	galPics.addEventListener('click', function(e) {
+		e.stopPropagation();					 // keep clicks from bubbling up
 	});
-    $(closeP).click(function(e){								  // close link function
+    closeP.addEventListener('click', function(e) { // close link function
         e.preventDefault();
-        $(galBox).fadeOut(300);
-        $(galScreen).fadeOut(300, function(){
-           $(galScreen).remove();								  // just remove these from the DOM
-           $(galBox).remove();
-        });
+        closeGallery();
     });
-    $(galBox).click(function(){									  // close on click away
-        $(galBox).fadeOut(300);
-        $(galScreen).fadeOut(300, function(){
-           $(galScreen).remove();								  // just remove these from the DOM
-           $(galBox).remove();
-        });
+    galBox.addEventListener('click', function() {  // close on click away
+        closeGallery();
     });
-    $(nextLink).click(function(e){								  // next link instructions
+    nextLink.addEventListener('click', function(e) { // next link instructions
         e.preventDefault();
-        o = o.nLink;							// reset the current img reference to the next one
-        $(galPic).fadeOut(250, function(){		// fade the image out
-            $(this).attr('href',o.nLink.href);	// reset the href of the next img href
-            prevLink.href = o.pLink.href;		// reset the href of the previous img href
-            $(this).attr('src',o.pics.src);		// reset the current img src the this src
-        });
-        $(galPic).fadeIn(250);					// fade the image in
-        var text=($(o.pics).attr('alt')) ? $(o.pics).attr('alt') : ''; // capture the alt for the caption
-        $(capP).text(text);						// change the caption
+        o = o.nLink;
+        this.href = o.nLink.href;
+        prevLink.href = o.pLink.href;
+        galPic.classList.toggle('show');
+        swapPic(o, galPic, capP);
     });
-    $(prevLink).click(function(e){								  // previous link instructions
+    prevLink.addEventListener('click', function(e) { // previous link instructions
         e.preventDefault();
-        o = o.pLink;							// reset the current img reference to the next one
-        $(galPic).fadeOut(250,function(){		// fade the image out
-            $(this).attr('href', o.pLink.href); // reset the href of the prev img href
-            nextLink.href= o.nLink.href;		// reset the href of the next img href
-            $(this).attr('src',o.pics.src);		// reset the current img src the this src 
-        });
-        $(galPic).fadeIn(250);					// fade the image in
-        var text=($(o.pics).attr('alt')) ? $(o.pics).attr('alt') : ''; // capture the alt for the caption
-        $(capP).text(text);						// change the caption
+        o = o.pLink;
+        this.href = o.pLink.href;
+        nextLink.href = o.nLink.href;
+        galPic.classList.toggle('show');
+        swapPic(o, galPic, capP);
     });
+};
+var closeGallery = function() {
+    galScreen.classList.toggle('show');
+    galBox.classList.toggle('show');
+    galScreen.addEventListener('transitionend', function(){
+        document.body.removeChild(galScreen);
+        document.body.removeChild(galBox);
+    });
+};
+var swapPic = function(o, galPic, capP) {
+    galPic.addEventListener('transitionend', function() {
+        galPic.src = o.pics.src;
+        galPic.classList.toggle('show');
+        var text= o.pics.getAttribute('alt');
+        capP.textContent = text;
+    }, {once: true});
 };

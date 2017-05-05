@@ -1,9 +1,123 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>SerpentVenom -- Lightbox Demonstration</title>
+		<title>Ugly Bunnies -- Lightbox Demonstration</title>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://serpentvenom.com/wp-content/themes/sv-html5/style.css">
+		<style>
+            html {
+                font-size: 5vw;
+                font-family: 'Helvetica', 'Open Sans', 'Arial', sans-serif;
+            	-ms-text-size-adjust: 100%;
+            	-webkit-text-size-adjust: 100%;
+                -webkit-font-smoothing: antialiased;
+            }
+            body {
+                max-width: 960px;
+                margin: 0 auto;
+            }
+            .pad {
+                padding: 1rem;
+            }
+            .artGrad {
+                background: linear-gradient(to bottom, hsl(150, 100%, 33%), hsl(150, 100%, 50%)) 0 0 no-repeat;
+            }
+            .inlineList {
+                list-style: none;
+            }
+            .col20 {
+                color: #fefefe;
+                list-style: none;
+                display: inline-block;
+                margin-right: .5rem;
+                margin-bottom: 1rem;
+                vertical-align: top;
+                width: 46%;
+            }
+            .galThumb {
+                width: 100%;
+            }
+            .galb {
+                height: 100%;
+                opacity: 0;
+                position: absolute; top: 0; left: 0;
+                width: 100%;
+                transition: opacity .5s ease;
+            }
+            #galScreen {
+                background: rgba(0,0,0, .5);
+                z-index: 3;
+            }
+            #galBox {
+                z-index: 4;
+            }
+            #pb {
+                background: #eceff4;
+                margin: 10% auto;
+                padding: 0 .75em 2.5em;
+                text-align: center;
+                width: 600px;
+                z-index: 4;
+            }
+            #pb a {
+                text-decoration: none;
+            }
+            #closeP {
+                line-height: 1;
+                padding: 0 .25em;
+                text-align: right;
+            }
+            #closeP a:after {
+                content: "\2612";
+                font-size: 1.5em;
+                margin-left: .15em;
+                position: relative; top: .09em;
+            }
+            #navP a:first-child {
+                margin-right: 2.5em;
+            }
+            #pPic {
+                max-height: 500px;
+                margin: 1em auto;
+                max-width: 500px;
+                opacity: 0;
+                transition: opacity .5s ease;
+            }
+            #pPic.show,
+            .show {
+                opacity: 1;
+            }
+            @media screen and (min-width: 480px) {
+                html {
+                    font-size: 3.33333vw;
+                }
+            }
+            @media screen and (min-width: 640px) {
+                html {
+                    font-size: 2.5vw;
+                }
+                .col20 {
+                    width: 30%;
+                }
+            }
+            @media screen and (min-width: 768px) {
+                html {
+                    font-size: 2.08333vw;
+                }
+                .col20 {
+                    width: 20%;
+                }
+            }
+            @media screen and (min-width: 960px) {
+                html {
+                    font-size: 1.66667vw;
+                }
+            }
+            @media screen and (min-width: 1024px) {
+                html {
+                    font-size: 16px;
+                }
+            }
+        </style>
 	</head>
 	<body>
 		<section class="content layout pad artGrad">
@@ -11,44 +125,43 @@
 		<p>Each of these thumbnails are linked to larger versions of the image. The script caputres the href of the link and the alt attribute value of the thumbnail. These values are used to append the lightbox to the dom and provide a means for navigating through the rest of the gallery.</p>
 		<ul class="inlineList layout pad" id="gallery">
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/LongHarbourSunset.jpg"><img class="galThumb" alt="Long Harbour Sunset" src="/Art/Photography/Landscapes/LongHarbourSunset_th.jpg"></a>
-		<p>Long Harbour Sunset</p>
+						<a class="galPic" href="photos/20140819_124637.jpg"><img class="galThumb" alt="Fun Falls" src="photos/20140819_124637_th.jpg"></a>
+		<p>Fun Falls</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/LongHarbourView.jpg"><img class="galThumb" alt="Long Harbour View" src="/Art/Photography/Landscapes/LongHarbourView_th.jpg"></a>
-		<p>Long Harbour View</p>
+						<a class="galPic" href="photos/20140822_105748.jpg"><img class="galThumb" alt="Redwood Forest" src="photos/20140822_105748_th.jpg"></a>
+		<p>Redwood Forest</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/FairburnFarms.jpg"><img class="galThumb" alt="Fairburn Farms" src="/Art/Photography/Landscapes/FairburnFarms_th.jpg"></a>
-		<p>Fairburn Farms</p>
+						<a class="galPic" href="photos/20140822_110316.jpg"><img class="galThumb" alt="Redwood Ferns" src="photos/20140822_110316_th.jpg"></a>
+		<p>Redwood Ferns</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/CowichanBay.jpg"><img class="galThumb" alt="Cowichan Bay" src="/Art/Photography/Landscapes/CowichanBay_th.jpg"></a>
-		<p>Cowichan Bay</p>
+						<a class="galPic" href="photos/20140822_122108.jpg"><img class="galThumb" alt="Redwood Ferns 2" src="photos/20140822_122108_th.jpg"></a>
+		<p>Redwood Ferns 2</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/HayrideToDuncan.jpg"><img class="galThumb" alt="Hayride to Duncan" src="/Art/Photography/Landscapes/HayrideToDuncan_th.jpg"></a>
-		<p>Hayride to Duncan</p>
+						<a class="galPic" href="photos/20140823_113627.jpg"><img class="galThumb" alt="The Lost World Canyon" src="photos/20140823_113627_th.jpg"></a>
+		<p>The Lost World Canyon</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/FerryOffSaltSpringIsland.jpg"><img class="galThumb" alt="Ferry Off Salt Spring Island" src="/Art/Photography/Landscapes/FerryOffSaltSpringIsland_th.jpg"></a>
-		<p>Ferry Off Salt Spring Island</p>
+						<a class="galPic" href="photos/20140823_115906.jpg"><img class="galThumb" alt="Fallen Tree" src="photos/20140823_115906_th.jpg"></a>
+		<p>Fallen Tree</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/LongHarbourHome.jpg"><img class="galThumb" alt="Long Harbour Home" src="/Art/Photography/Landscapes/LongHarbourHome_th.jpg"></a><p></p>
-		<p>Long Harbour Home</p>
+						<a class="galPic" href="photos/IMAG0540.jpg"><img class="galThumb" alt="View from Maui" src="photos/IMAG0540_th.jpg"></a>
+		<p>View from Maui</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/AcossLittleQualicumFalls.jpg"><img class="galThumb" alt="Across Little Qualicum Falls" src="/Art/Photography/Landscapes/AcossLittleQualicumFalls_th.jpg"></a>
-		<p>Across Little Qualicum Falls</p>
+						<a class="galPic" href="photos/IMAG0556.jpg"><img class="galThumb" alt="Falls on the Road to Hana" src="photos/IMAG0556_th.jpg"></a>
+		<p>Falls on the Road to Hana</p>
 		</li>
 		<li class="col20">
-						<a class="galPic" href="http://serpentvenom.com/Art/Photography/Landscapes/QualicumRiver.jpg"><img class="galThumb" alt="Qualicum River" src="/Art/Photography/Landscapes/QualicumRiver_th.jpg"></a>
-		<p>Qualicum River</p>
+						<a class="galPic" href="photos/IMAG2003.jpg"><img class="galThumb" alt="Grand Canyon" src="photos/IMAG2003_th.jpg"></a>
+		<p>Grand Canyon</p>
 		</li>
 		</ul>
 		</section>
-<script type='text/javascript' src='http://code.jquery.com/jquery.min.js?ver=1.8.1'></script>
 	<script src="galPop.js"></script>
 	</body>
 </html>
