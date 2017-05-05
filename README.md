@@ -1,11 +1,11 @@
 Lightbox
 ========
-The custom lightbox developed for SerpentVenom.com. This is the sample implementation of my lightbox imave viewer script.
+The custom lightbox developed for my website. This is the sample implementation of my lightbox image viewer script.
 
 
 Copyright and License
 =====================
-SerpentVenom Lightbox is Copyright 2011 Michael Wong
+Ugly Bunnies Lightbox is Copyright 2017 Michael Wong
 
 Licensed under the **[Apache License, Version 2.0] [license]** (the "License"); you may not use this software except in compliance with the License.
 
