@@ -2,7 +2,7 @@
 // collect all the links that point to the full-size image
     var galLinks = document.querySelectorAll('#gallery a.galPic');
 // iterate over the links and perform these instructions for each
-    [].forEach.call(galLinks, function(el, i) {
+    galLinks.forEach(function(el, i) {
 //create a new image object for pre-caching
         el.pics = new Image();
 //set the src for each image object
@@ -15,53 +15,40 @@
         el.nLink = (i === galLinks.length - 1 ? galLinks[0] : galLinks[i+1]);
 //set the previous image link information
         el.pLink = (i === 0 ? galLinks[galLinks.length - 1] : galLinks[i - 1]);
+        el.index = i;
 //set the click event handler to run popPicBox function and prevent the default behavior
         el.addEventListener('click', function(e) {
             e.preventDefault();
             var showing = document.getElementById('galScreen');
             if (!showing) {
-                return popPicBox(el);
+                return popPicBox(el, galLinks);
             }
         });
     });
 })();
-var popPicBox = function(o) {
-//create and append the various elements required to display the lightbox
-    var div = document.createElement('div');
-    var p = document.createElement('p');
-    var a = document.createElement('a');
+var popPicBox = function(o, galLinks) {
     var galPic = o.pics;
     var box = document.createDocumentFragment();
     var screen = document.createDocumentFragment();
-    var galScreen = div.cloneNode(false);
-    galScreen.id = 'galScreen';
-    galScreen.classList.add('galb');
+    var galScreen = createElem('div', 'galScreen', 'galb');
     screen.appendChild(galScreen);
-    var galBox = div.cloneNode(false);		      // main container for the image box
-    galBox.id = 'galBox';
-    galBox.classList.add('galb');
-    var galPics = div.cloneNode(false); 		  // image box
-    galPics.id = 'pb';
-    galPics.classList.add('s4');
-    var closeP = p.cloneNode(false);			  // close control paragraph
-    closeP.id = 'closeP';
-    var closeLink = a.cloneNode(false);			  // close control
+    var galBox = createElem('div', 'galBox', 'galb'); // main container for the image box
+    var galPics = createElem('div', 'pb', 's4'); 		  // image box
+    var closeP = createElem('p', 'closeP');			  // close control paragraph
+    var closeLink = createElem('a');			  // close control
     closeLink.setAttribute('href', '#');
     closeLink.textContent = 'close';
     closeP.appendChild(closeLink);			      // append close control to the paragraph
     galPic.id = 'pPic';                           // larger image
     galPic.src = o.pics.src;
     galPic.classList.add('show');
-    var capP = p.cloneNode(false);				  // caption paragraph
-    capP.id = 'capP';
-    capP.textContent = o.capt;
-    var navP = p.cloneNode(false);				  // navigation control paragrah
-    navP.id = 'navP';
-    var prevLink = a.cloneNode(false);            //prev link
+    var capP = createElem('p', 'capP');				  // caption paragraph
+    var navP = createElem('p', 'navP');				  // navigation control paragrah
+    var prevLink = createElem('a');            //prev link
     prevLink.href = o.pLink.href;
     prevLink.setAttribute('title', 'view previous image');
     prevLink.textContent = '\u00AB prev';
-    var nextLink = a.cloneNode(false);            // next link
+    var nextLink = createElem('a');            // next link
     nextLink.href = o.nLink.href;
     nextLink.setAttribute('title', 'view next image');
     nextLink.textContent = 'next \u00BB';
@@ -86,20 +73,34 @@ var popPicBox = function(o) {
     });
     nextLink.addEventListener('click', function(e) { // next link instructions
         e.preventDefault();
-        o = o.nLink;
-        this.href = o.nLink.href;
-        prevLink.href = o.pLink.href;
+        var me = o.nLink;
+        var picIndex = me.index;
+        this.href = me.nLink.href;
+        prevLink.href = me.pLink.href;
         galPic.classList.toggle('show');
-        swapPic(o, galPic, capP);
+        swapPic(me, picIndex, galPic, capP, galLinks);
+        o = me;
     });
     prevLink.addEventListener('click', function(e) { // previous link instructions
         e.preventDefault();
-        o = o.pLink;
-        this.href = o.pLink.href;
-        nextLink.href = o.nLink.href;
+        var me = o.pLink;
+        var picIndex = me.index;
+        this.href = me.pLink.href;
+        nextLink.href = me.nLink.href;
         galPic.classList.toggle('show');
-        swapPic(o, galPic, capP);
+        swapPic(me, picIndex, galPic, capP, galLinks);
+        o = me;
     });
+};
+var createElem = function(el, id, className){
+    var o = document.createElement(el);
+    if(id) {
+        o.id = id;
+    }
+    if(className) {
+        o.className = className;
+    }
+    return o;
 };
 var closeGallery = function() {
     galScreen.classList.toggle('show');
@@ -109,9 +110,9 @@ var closeGallery = function() {
         document.body.removeChild(galBox);
     });
 };
-var swapPic = function(o, galPic, capP) {
+var swapPic = function(o, i, galPic, capP, galLinks) {
     galPic.addEventListener('transitionend', function() {
-        galPic.src = o.pics.src;
+        galPic.src = galLinks[i].getAttribute('href');
         galPic.classList.toggle('show');
         var text= o.pics.getAttribute('alt');
         capP.textContent = text;
