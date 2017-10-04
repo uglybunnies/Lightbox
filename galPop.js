@@ -38,26 +38,26 @@
             var galPic = o.pics;
             var box = document.createDocumentFragment();
             var screen = document.createDocumentFragment();
-            var galScreen = self.createElem('div', 'galScreen', 'galb');
+            var galScreen = self.createElem('div', 'galScreen', 'galb screen');
             screen.appendChild(galScreen);
-            var galBox = self.createElem('div', 'galBox', 'galb'); // main container for the image box
-            var galPics = self.createElem('div', 'pb', 's4'); 		  // image box
-            var closeP = self.createElem('p', 'closeP');			  // close control paragraph
-            var closeLink = self.createElem('a');			  // close control
+            var galBox = self.createElem('div', 'galBox', 'galb container'); // main container for the image box
+            var galPics = self.createElem('div', 'pb', 's4 modal'); 		  // image box
+            var closeP = self.createElem('p', 'closeP', 'modal-header');			  // close control paragraph
+            var closeLink = self.createElem('a', 'closeLink', 'close-modal');			  // close control
             closeLink.setAttribute('href', '#');
             closeLink.textContent = 'close';
             closeP.appendChild(closeLink);			      // append close control to the paragraph
             galPic.id = 'pPic';                           // larger image
             galPic.src = o.pics.src;
-            galPic.classList.add('show');
-            var capP = self.createElem('p', 'capP');				  // caption paragraph
-            capP.textContent = o.capt;
-            var navP = self.createElem('p', 'navP');				  // navigation control paragrah
-            var prevLink = self.createElem('a');            //prev link
+            galPic.classList.add('full-pic', 'show');
+            var capP = self.createElem('p', 'capP', 'caption');
+            capP.textContent = o.capt;		  // caption paragraph
+            var navP = self.createElem('p', 'navP', 'pic-nav');				  // navigation control paragrah
+            var prevLink = self.createElem('a', 'prevLink', 'browse-pic prev');            //prev link
             prevLink.href = o.pLink.href;
             prevLink.setAttribute('title', 'view previous image');
             prevLink.textContent = '\u00AB prev';
-            var nextLink = self.createElem('a');            // next link
+            var nextLink = self.createElem('a', 'nextLink', 'browse-pic next');            // next link
             nextLink.href = o.nLink.href;
             nextLink.setAttribute('title', 'view next image');
             nextLink.textContent = 'next \u00BB';
@@ -69,36 +69,57 @@
             document.body.appendChild(box);				 // append the image box
             galBox.classList.add('show');
             galScreen.classList.add('show');
-            // add event handlers and instructions for the controls
-            galPics.addEventListener('click', function(e) {
-                e.stopPropagation();					 // keep clicks from bubbling up
+
+            // add new events and event handlers for the controls
+            var nextPic = new Event('next', {
+                bubbles : true,
+                cancelable : false
             });
-            closeLink.addEventListener('click', function(e) { // close link function
-                e.preventDefault();
+            var prevPic = new Event('prev', {
+                bubbles : true,
+                cancelable : false
+            });
+            var closeModal = new Event('close', {
+                bubbles : true,
+                cancelable : false
+            });
+
+            pb.addEventListener('close', function(e) {
                 self.closeGallery(galScreen, galBox);
             });
-            galBox.addEventListener('click', function() {  // close on click away
-                self.closeGallery(galScreen, galBox);
-            });
-            nextLink.addEventListener('click', function(e) { // next link instructions
-                e.preventDefault();
+            pb.addEventListener('next', function(e) {
                 var me = o.nLink;
                 var picIndex = me.index;
-                this.href = me.nLink.href;
-                prevLink.href = me.pLink.href;
-                galPic.classList.toggle('show');
+                self.updatePicLinks(me, nextLink, prevLink);
                 self.swapPic(me, picIndex, galPic, capP, galLinks);
                 o = me;
             });
-            prevLink.addEventListener('click', function(e) { // previous link instructions
-                e.preventDefault();
+            pb.addEventListener('prev', function(e) {
                 var me = o.pLink;
                 var picIndex = me.index;
-                this.href = me.pLink.href;
-                nextLink.href = me.nLink.href;
-                galPic.classList.toggle('show');
+                self.updatePicLinks(me, nextLink, prevLink);
                 self.swapPic(me, picIndex, galPic, capP, galLinks);
                 o = me;
+            });
+            pb.addEventListener('click', function(e) {
+                // don't follow the link href
+                e.preventDefault();
+                // keep clicks within the modal from bubbling to the main container & triggering close function
+                e.stopPropagation();
+                var target = e.target;
+                if (target.matches('.next')) {
+                    pb.dispatchEvent(nextPic);
+                }
+                if (target.matches('.prev')) {
+                    pb.dispatchEvent(prevPic);
+                }
+                if (target.matches('.close-modal')) {
+                    pb.dispatchEvent(closeModal);
+                }
+            });
+            // close the modal if the user clicks on the overlay screen
+            galBox.addEventListener('click', function() {
+                self.closeGallery(galScreen, galBox);
             });
         },
         createElem : function(el, id, className) {
@@ -120,12 +141,17 @@
             });
         },
         swapPic : function(o, i, galPic, capP, galLinks){
+            galPic.classList.toggle('show');
             galPic.addEventListener('transitionend', function() {
                 galPic.src = galLinks[i].getAttribute('href');
                 galPic.classList.toggle('show');
-                var text= o.pics.getAttribute('alt');
+                var text= o.capt;
                 capP.textContent = text;
             }, {once: true});
+        },
+        updatePicLinks : function(o, nextLink, prevLink) {
+            nextLink.href = o.nLink.href;
+            prevLink.href = o.pLink.href;
         }
 
     };
