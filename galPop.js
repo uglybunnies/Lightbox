@@ -51,6 +51,7 @@
             galPic.src = o.pics.src;
             galPic.classList.add('show');
             var capP = self.createElem('p', 'capP');				  // caption paragraph
+            capP.textContent = o.capt;
             var navP = self.createElem('p', 'navP');				  // navigation control paragrah
             var prevLink = self.createElem('a');            //prev link
             prevLink.href = o.pLink.href;
