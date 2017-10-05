@@ -23,8 +23,9 @@
                 el.nLink = (i === galLinks.length - 1 ? galLinks[0] : galLinks[i+1]);
                 //set the previous image link information
                 el.pLink = (i === 0 ? galLinks[galLinks.length - 1] : galLinks[i - 1]);
+                // set index to be able to target specific pics
                 el.index = i;
-                //set the click event handler to run popPicBox function and prevent the default behavior
+                //set the click event handler to run popPic function and prevent the default behavior
                 el.addEventListener('click', function(e) {
                     e.preventDefault();
                     var showing = document.getElementById('galScreen');
@@ -35,15 +36,16 @@
             });
         },
         popPic : function(o, galLinks) {
-            var galPic = o.pics;
+            var galPic = o.pics; // get the image object
+            // document fragments used to reduce redrawing in the browser.
             var box = document.createDocumentFragment();
             var screen = document.createDocumentFragment();
             var galScreen = self.createElem('div', 'galScreen', 'galb screen');
             screen.appendChild(galScreen);
-            var galBox = self.createElem('div', 'galBox', 'galb container'); // main container for the image box
+            var galBox = self.createElem('div', 'galBox', 'galb container');  // main container for the image box
             var galPics = self.createElem('div', 'pb', 's4 modal'); 		  // image box
-            var closeP = self.createElem('p', 'closeP', 'modal-header');			  // close control paragraph
-            var closeLink = self.createElem('a', 'closeLink', 'close-modal');			  // close control
+            var closeP = self.createElem('p', 'closeP', 'modal-header');	  // close control paragraph
+            var closeLink = self.createElem('a', 'closeLink', 'close-modal'); // close control
             closeLink.setAttribute('href', '#');
             closeLink.textContent = 'close';
             closeP.appendChild(closeLink);			      // append close control to the paragraph
@@ -51,13 +53,13 @@
             galPic.src = o.pics.src;
             galPic.classList.add('full-pic', 'show');
             var capP = self.createElem('p', 'capP', 'caption');
-            capP.textContent = o.capt;		  // caption paragraph
-            var navP = self.createElem('p', 'navP', 'pic-nav');				  // navigation control paragrah
-            var prevLink = self.createElem('a', 'prevLink', 'browse-pic prev');            //prev link
+            capP.textContent = o.capt;		                                    // caption paragraph
+            var navP = self.createElem('p', 'navP', 'pic-nav');				    // navigation control paragrah
+            var prevLink = self.createElem('a', 'prevLink', 'browse-pic prev'); //prev link
             prevLink.href = o.pLink.href;
             prevLink.setAttribute('title', 'view previous image');
             prevLink.textContent = '\u00AB prev';
-            var nextLink = self.createElem('a', 'nextLink', 'browse-pic next');            // next link
+            var nextLink = self.createElem('a', 'nextLink', 'browse-pic next'); // next link
             nextLink.href = o.nLink.href;
             nextLink.setAttribute('title', 'view next image');
             nextLink.textContent = 'next \u00BB';
@@ -83,10 +85,12 @@
                 bubbles : true,
                 cancelable : false
             });
-
+            // handle click on the closing control
             pb.addEventListener('close', function(e) {
                 self.closeGallery(galScreen, galBox);
             });
+
+            // handle click on the next link
             pb.addEventListener('next', function(e) {
                 var me = o.nLink;
                 var picIndex = me.index;
@@ -94,6 +98,8 @@
                 self.swapPic(me, picIndex, galPic, capP, galLinks);
                 o = me;
             });
+
+            // handle click on the previous link
             pb.addEventListener('prev', function(e) {
                 var me = o.pLink;
                 var picIndex = me.index;
@@ -101,20 +107,22 @@
                 self.swapPic(me, picIndex, galPic, capP, galLinks);
                 o = me;
             });
+
+            // set click event listener on the modal
             pb.addEventListener('click', function(e) {
                 // don't follow the link href
                 e.preventDefault();
-                // keep clicks within the modal from bubbling to the main container & triggering close function
+                // keep clicks on the modal from bubbling up & triggering close function
                 e.stopPropagation();
                 var target = e.target;
                 if (target.matches('.next')) {
-                    pb.dispatchEvent(nextPic);
+                    pb.dispatchEvent(nextPic);        // clicked on next
                 }
                 if (target.matches('.prev')) {
-                    pb.dispatchEvent(prevPic);
+                    pb.dispatchEvent(prevPic);        // clicked on prev
                 }
                 if (target.matches('.close-modal')) {
-                    pb.dispatchEvent(closeModal);
+                    pb.dispatchEvent(closeModal);     // clicked on close
                 }
             });
             // close the modal if the user clicks on the overlay screen
@@ -149,9 +157,9 @@
                 capP.textContent = text;
             }, {once: true});
         },
-        updatePicLinks : function(o, nextLink, prevLink) {
-            nextLink.href = o.nLink.href;
-            prevLink.href = o.pLink.href;
+        updatePicLinks : function(l, nextLink, prevLink) {
+            nextLink.href = l.nLink.href;
+            prevLink.href = l.pLink.href;
         }
 
     };
