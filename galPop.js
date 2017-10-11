@@ -116,13 +116,13 @@
                 e.stopPropagation();
                 var target = e.target;
                 if (target.matches('.next')) {
-                    pb.dispatchEvent(nextPic);        // clicked on next
+                    target.dispatchEvent(nextPic);        // clicked on next
                 }
                 if (target.matches('.prev')) {
-                    pb.dispatchEvent(prevPic);        // clicked on prev
+                    target.dispatchEvent(prevPic);        // clicked on prev
                 }
                 if (target.matches('.close-modal')) {
-                    pb.dispatchEvent(closeModal);     // clicked on close
+                    target.dispatchEvent(closeModal);     // clicked on close
                 }
             });
             // close the modal if the user clicks on the overlay screen
